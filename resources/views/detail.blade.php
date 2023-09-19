@@ -11,7 +11,7 @@
         <div class="detail-row">
             <div class="label">商品画像</div>
             <div class="value">
-                <img src="{{ $product->image_path }}" alt="Product Image">
+                <img src="{{ asset('storage/' . $product->img_path) }}" alt="商品画像">
             </div>
         </div>
         <div class="detail-row">

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Models\Company;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -47,15 +48,25 @@ class ProductController extends Controller
             'product_name' => 'required',
             'company_id' => 'required',
             'price' => 'required | integer',
-            'stock'=> 'required | integer',
+            'stock' => 'required | integer',
         ]);
-
+    
         $input = $request->all();
-        Product::create($input);
-        return redirect()->route('products.list')
-        ->with('success','商品を登録しました');
-
+    
+        return DB::transaction(function () use ($input, $request) {
+            if ($request->hasFile('img_path')) {
+                $image = $request->file('img_path');
+                $imagePath = $image->store('public/img_path'); 
+                $input['img_path'] = $imagePath;
+            }
+    
+            $product = Product::create($input);
+        
+            return redirect()->route('products.list')
+                ->with('success','商品を登録しました');
+        });
     }
+    
 
     /**
      * Display the specified resource.
@@ -105,17 +116,21 @@ class ProductController extends Controller
         $product->price = $request->input(["price"]);
         $product->stock = $request->input(["stock"]);
         $product->comment = $request->input(["comment"]);
-        if ($request->hasFile('img_path')) {
-            $image = $request->file('img_path');
-            $imagePath = $image->store('public/img_path'); 
-            $product->img_path = $imagePath;
-        }
 
-        $product->save(); 
+        return DB::transaction(function () use ($request, $product) {
+            $data = $request->except(['_token', '_method']);
+            if ($request->hasFile('img_path')) {
+                $image = $request->file('img_path');
+                $imagePath = $image->store('public/img_path');
+                $data['img_path'] = $imagePath;
+            }
 
-        return redirect()->route('products.edit', $product->id)
-            ->with('success', '商品情報が更新されました');
-    
+            $product->updateProduct($data);
+
+            return redirect()->route('products.edit', $product->id)
+                ->with('success', '商品情報が更新されました');
+        });
+  
     }
 
 
@@ -127,10 +142,13 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {    
-        $product->delete(); 
         
-        return redirect()->route('products.list')
-            ->with('success', '商品が削除されました');
+        return DB::transaction(function () use ($product) {
+            $product->delete(); 
+        
+            return redirect()->route('products.list')
+                ->with('success', '商品が削除されました');
+        });
     }
     
     public function search(Request $request)

@@ -16,6 +16,7 @@ class Product extends Model
         'price',
         'stock',
         'company_id',
+        'comment',
         'created_at',
         'updated_at',
         ];
@@ -27,7 +28,6 @@ class Product extends Model
         return $products;
     }
 
-    // Product.php (Productモデル)
     public function company() {
         return $this->belongsTo(Company::class, 'company_id');
     }

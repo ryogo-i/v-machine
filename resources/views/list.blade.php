@@ -32,7 +32,7 @@
             @foreach ($products as $product)
             <tr>
                 <td>{{ $product->id }}</td>
-                <td>{{ $product->img_path }}</td>
+                <td><img src="{{ asset('storage/' . $product->img_path) }}" alt="商品画像"></td>
                 <td>{{ $product->product_name }}</td>
                 <td>{{ $product->price }}</td>
                 <td>{{ $product->stock }}</td>
