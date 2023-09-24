@@ -32,4 +32,38 @@ class Product extends Model
         return $this->belongsTo(Company::class, 'company_id');
     }
 
+    // 商品を作成
+    public function createProduct(array $input) {
+        return $this->create($input);
+    }
+
+    // 商品情報を更新
+    public function updateProduct($data) {
+        $this->update($data);
+    }
+
+    // 商品を削除
+    public function deleteProduct() {
+        $this->delete();
+    }
+
+    // 商品一覧を表示
+    public function getAllProducts() {
+        return static::with('company')->get();
+    }
+
+    public static function serchProducts($keyword, $companyId) {
+        $query = static::query();
+
+        if($keyword) {
+            $query->where('product_name', 'like', '%' . $keyword . '%');
+        }
+
+        if($companyId) {
+            $query->where('company_id', $companyId);
+        }
+
+        return $query->get();
+    }
+
 }

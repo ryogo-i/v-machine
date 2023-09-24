@@ -57,10 +57,10 @@ class ProductController extends Controller
             if ($request->hasFile('img_path')) {
                 $image = $request->file('img_path');
                 $imagePath = $image->store('public/img_path'); 
-                $input['img_path'] = $imagePath;
+                $input['img_path'] = str_replace('public/', '', $imagePath); //文字列をトリミングする
             }
     
-            $product = Product::create($input);
+            Product::createProduct($input);
         
             return redirect()->route('products.list')
                 ->with('success','商品を登録しました');
@@ -107,30 +107,22 @@ class ProductController extends Controller
         $request->validate([
             'product_name' => 'required',
             'company_id' => 'required',
-            'price' => 'required | integer',
-            'stock'=> 'required | integer',
+            'price' => 'required|integer',
+            'stock' => 'required|integer',
         ]);
-
-        $product->product_name = $request->input(["product_name"]);
-        $product->company_id = $request->input(["company_id"]);
-        $product->price = $request->input(["price"]);
-        $product->stock = $request->input(["stock"]);
-        $product->comment = $request->input(["comment"]);
-
-        return DB::transaction(function () use ($request, $product) {
-            $data = $request->except(['_token', '_method']);
-            if ($request->hasFile('img_path')) {
-                $image = $request->file('img_path');
-                $imagePath = $image->store('public/img_path');
-                $data['img_path'] = $imagePath;
-            }
-
-            $product->updateProduct($data);
-
-            return redirect()->route('products.edit', $product->id)
-                ->with('success', '商品情報が更新されました');
-        });
-  
+    
+        $data = $request->except(['_token', '_method']);
+    
+        if ($request->hasFile('img_path')) {
+            $image = $request->file('img_path');
+            $imagePath = $image->store('public/img_path');
+            $data['img_path'] = str_replace('public/', '', $imagePath);
+        }
+    
+        $product->updateProduct($data);
+    
+        return redirect()->route('products.edit', $product->id)
+            ->with('success', '商品情報が更新されました');
     }
 
 
@@ -144,8 +136,8 @@ class ProductController extends Controller
     {    
         
         return DB::transaction(function () use ($product) {
-            $product->delete(); 
-        
+            $product->deleteProduct();
+
             return redirect()->route('products.list')
                 ->with('success', '商品が削除されました');
         });
@@ -155,18 +147,8 @@ class ProductController extends Controller
     {
         $keyword = $request->input('keyword');
         $companyId = $request->input('maker');
-
-        $query = Product::query();
-
-        if ($keyword) {
-            $query->where('product_name', 'like', '%' . $keyword . '%');
-        }
     
-        if ($companyId) {
-            $query->where('company_id', $companyId);
-        }
-    
-        $products = $query->get();
+        $products = Product::searchProducts($keyword, $companyId);
         $companies = Company::all();
     
         return view('list', ['products' => $products, 'companies' => $companies]);
