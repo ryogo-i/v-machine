@@ -57,7 +57,7 @@ class ProductController extends Controller
             if ($request->hasFile('img_path')) {
                 $image = $request->file('img_path');
                 $imagePath = $image->store('public/img_path'); 
-                $input['img_path'] = str_replace('public/', '', $imagePath); //文字列をトリミングする
+                $input['img_path'] = str_replace('public/', 'storage/', $imagePath);
             }
     
             Product::createProduct($input);
