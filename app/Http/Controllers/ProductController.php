@@ -60,7 +60,9 @@ class ProductController extends Controller
                 $input['img_path'] = str_replace('public/', 'storage/', $imagePath);
             }
     
-            Product::createProduct($input);
+            $product = new Product();
+            $product->createProduct($input);
+
         
             return redirect()->route('products.list')
                 ->with('success','商品を登録しました');
@@ -116,7 +118,7 @@ class ProductController extends Controller
         if ($request->hasFile('img_path')) {
             $image = $request->file('img_path');
             $imagePath = $image->store('public/img_path');
-            $data['img_path'] = str_replace('public/', '', $imagePath);
+            $data['img_path'] = str_replace('public/', 'storage/', $imagePath);
         }
     
         $product->updateProduct($data);

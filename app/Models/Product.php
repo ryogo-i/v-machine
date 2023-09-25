@@ -52,7 +52,7 @@ class Product extends Model
         return static::with('company')->get();
     }
 
-    public static function serchProducts($keyword, $companyId) {
+    public static function searchProducts($keyword, $companyId) {
         $query = static::query();
 
         if($keyword) {
