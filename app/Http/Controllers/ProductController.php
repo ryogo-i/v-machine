@@ -113,18 +113,20 @@ class ProductController extends Controller
             'stock' => 'required|integer',
         ]);
     
-        $data = $request->except(['_token', '_method']);
+        return DB::transaction(function () use ($request, $product) {
+            $data = $request->except(['_token', '_method']);
     
-        if ($request->hasFile('img_path')) {
-            $image = $request->file('img_path');
-            $imagePath = $image->store('public/img_path');
-            $data['img_path'] = str_replace('public/', 'storage/', $imagePath);
-        }
+            if ($request->hasFile('img_path')) {
+                $image = $request->file('img_path');
+                $imagePath = $image->store('public/img_path');
+                $data['img_path'] = str_replace('public/', 'storage/', $imagePath);
+            }
     
-        $product->updateProduct($data);
+            $product->updateProduct($data);
     
-        return redirect()->route('products.edit', $product->id)
-            ->with('success', '商品情報が更新されました');
+            return redirect()->route('products.edit', $product->id)
+                ->with('success', '商品情報が更新されました');
+        });
     }
 
 

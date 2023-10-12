@@ -13,10 +13,10 @@
                 <option value="{{ $company->id }}">{{ $company->company_name }}</option>
                 @endforeach
             </select>
-            <button type="submit">検索</button>
+            <button type="submit" id="product-search-form">検索</button>
         </form>
     </div>
-    <table class="table">
+    <table class="table" id="product-table">
         <thead>
             <tr>
                 <th>ID</th>
@@ -30,9 +30,9 @@
         </thead>
         <tbody>
             @foreach ($products as $product)
-            <tr>
+            <tr> 
                 <td>{{ $product->id }}</td>
-                <td><img src="{{ asset('storage/' . $product->img_path) }}" alt="商品画像"></td>
+                <td><img src="{{ asset($product->img_path) }}" alt="商品画像"></td>
                 <td>{{ $product->product_name }}</td>
                 <td>{{ $product->price }}</td>
                 <td>{{ $product->stock }}</td>
@@ -61,5 +61,9 @@
     </table>
     </div>
 </div>
+<script>
+    var baseUrl = '{{ url('/') }}';
+</script>
 
+<script src="{{ asset('js/product.js') }}"></script>
 @endsection
