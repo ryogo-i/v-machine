@@ -29,7 +29,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($products as $product)
+            <!-- @foreach ($products as $product)
             <tr> 
                 <td>{{ $product->id }}</td>
                 <td><img src="{{ asset($product->img_path) }}" alt="商品画像"></td>
@@ -56,14 +56,10 @@
                 }
                 </script>
             </tr>
-            @endforeach
+            @endforeach -->
         </tbody>
     </table>
     </div>
 </div>
-<script>
-    var baseUrl = '{{ url('/') }}';
-</script>
-
 <script src="{{ asset('js/product.js') }}"></script>
 @endsection

@@ -20,7 +20,13 @@ class ProductController extends Controller
         $products = Product::with('company')->get();
         $companies = Company::all();
     
-        return view('list', ['products' => $products, 'companies' => $companies]);
+        $data = [
+            'products' => $products->toArray(),
+            'companies' => $companies->toArray(),
+        ];
+    
+        return response()->json($data);
+        // return view('list', ['products' => $products, 'companies' => $companies]);
     }
     
 

@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    // 商品一覧表示時
+    // 商品一覧表示時の非同期処理
     $.ajax({
         type: 'GET',
         url: '/list',
@@ -9,6 +9,8 @@ $(document).ready(function () {
 
         let products = response.products;
         let tableBody = $('#product-table tbody');
+
+        tableBody.empty(); 
 
         for (let product of products) {
             let detailUrl = '/detail/' + product.id;
@@ -30,6 +32,7 @@ $(document).ready(function () {
     }).fail(function (error) {
         alert('失敗しました！');
     });
+    setTimeout(5000);
 });
 
 
