@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Kyslik\ColumnSortable\Sortable; //STEP8で追加
 
 class Product extends Model
 {
-    use HasFactory;
+    use HasFactory, Sortable; // STEP8でSortable トレイトを使用
 
     protected $fillable = [
         'img_path',
@@ -20,6 +21,10 @@ class Product extends Model
         'created_at',
         'updated_at',
         ];
+
+    public $sortable = [
+        'id', 'img_path', 'product_name', 'price', 'stock', 'company.company_name' // ソート可能なカラムを指定
+    ];//STEP8で追加
 
     public function getList() {
         // productsテーブルからデータを取得
@@ -52,7 +57,7 @@ class Product extends Model
         return static::with('company')->get();
     }
 
-    public static function searchProducts($keyword, $companyId) {
+    public static function searchProducts($keyword, $companyId, $minPrice, $maxPrice, $minStock, $maxStock) {
         $query = static::query();
 
         if($keyword) {
@@ -61,6 +66,22 @@ class Product extends Model
 
         if($companyId) {
             $query->where('company_id', $companyId);
+        }
+
+        if($minPrice) {
+            $query->where('price', '>=', $minPrice);
+        }
+
+        if($maxPrice) {
+            $query->where('price', '<=', $maxPrice);
+        }
+
+        if($minStock) {
+            $query->where('stock', '>=', $minStock);
+        }
+
+        if($maxStock) {
+            $query->where('stock', '<=', $maxStock);
         }
 
         return $query->get();

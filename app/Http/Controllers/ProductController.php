@@ -6,6 +6,7 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Models\Company;
 use Illuminate\Support\Facades\DB;
+use Kyslik\ColumnSortable\Sortable;
 
 class ProductController extends Controller
 {
@@ -14,19 +15,26 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    // STEP7まで
+    // public function index()
+    // {
+    //     $model = new Product();
+    //     $products = Product::with('company')->get();
+    //     $companies = Company::all();
+    
+
+    //     return view('list', ['products' => $products, 'companies' => $companies]);
+    // }
+    public function index(Request $request)
     {
         $model = new Product();
-        $products = Product::with('company')->get();
+        $direction = $request->input('direction', 'desc'); // デフォルトは降順
+        $sortColumn = $request->input('sort', 'id'); // デフォルトのソートカラム
+
+        $products = Product::sortable([$sortColumn => $direction])->with('company')->get();
         $companies = Company::all();
-    
-        $data = [
-            'products' => $products->toArray(),
-            'companies' => $companies->toArray(),
-        ];
-    
-        return response()->json($data);
-        // return view('list', ['products' => $products, 'companies' => $companies]);
+
+        return view('list', ['products' => $products, 'companies' => $companies]);
     }
     
 
@@ -148,8 +156,9 @@ class ProductController extends Controller
         return DB::transaction(function () use ($product) {
             $product->deleteProduct();
 
-            return redirect()->route('products.list')
-                ->with('success', '商品が削除されました');
+            // return redirect()->route('products.list')
+            //     ->with('success', '商品が削除されました');
+            return response()->json(['message' => '商品が削除されました']);
         });
     }
     
@@ -157,10 +166,23 @@ class ProductController extends Controller
     {
         $keyword = $request->input('keyword');
         $companyId = $request->input('maker');
+        $minPrice = $request->input('min-price');
+        $maxPrice = $request->input('max-price');
+        $minStock = $request->input('min-stock');
+        $maxStock = $request->input('max-stock');
+        
     
-        $products = Product::searchProducts($keyword, $companyId);
+        $products = Product::searchProducts($keyword, $companyId, $minPrice, $maxPrice, $minStock, $maxStock)->load('company');
+        // $products = Product::with('company')->searchProducts($keyword, $companyId)->get();　これでは表示できなかった
+        // $products = Product::searchProducts($keyword, $companyId); STEP7状態
         $companies = Company::all();
     
-        return view('list', ['products' => $products, 'companies' => $companies]);
+        $data = [
+            'products' => $products->toArray(),
+            'companies' => $companies->toArray(),
+        ];
+    
+        return response()->json($data);
+        // return view('list', ['products' => $products, 'companies' => $companies]);
     }
 }

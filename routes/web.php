@@ -29,7 +29,7 @@ Route::middleware(['auth'])->group(function () {
 // 検索ボタン押下時
 Route::get('/search', 'App\Http\Controllers\ProductController@search')->name('products.search');
 // 削除ボタン押下時
-Route::delete('/{product}', 'App\Http\Controllers\ProductController@destroy')->name('products.destroy');
+Route::delete('/products/{product}', 'App\Http\Controllers\ProductController@destroy')->name('products.destroy');
 
 
 // 詳細画面
