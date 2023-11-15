@@ -88,10 +88,12 @@ $(document).ready(function() {
 
             $.ajax({
                 type: 'POST',
+                headers: {
+                   'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
                 url: '/v-machine/public/products/' + productID,
                 data: {
                     '_method': 'DELETE',
-                    _token: '{{ csrf_token() }}'
                 }
             })
             .done(function(data) {
