@@ -12,19 +12,19 @@ class SalesController extends Controller
     public function purchase(Request $request)
     {
         // リクエストから必要なデータを取得
-        $prosuctId = $request->input('product_id');
+        $productId = $request->input('product_id');
         $quantity = $request->input('quantity', 1); //購入数を代入。データがない場合１を代入。
 
         //　DBから対象の商品を検索、取得
         $product =Product::find($productId); 
 
-        // 商品が存在しない、または在庫が不足している場合のバリデーションを行う
+        // 商品が存在しない場合のバリデーションを行う
         if (!$product) {
             return response()->json(['message' => '商品が存在しません'], 404);
         }
         // 在庫が足りないときエラー
         if($product->stock < $quantity) {
-            return respose()->json(['message' => '在庫不足です']);
+            return response()->json(['message' => '在庫不足です']);
         }
 
         // 在庫数を減算

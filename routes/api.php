@@ -20,4 +20,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 // STEP8 API
-Route::post('/purchase', ['SalesController@purchase']);
+Route::post('/purchase', [SalesController::class, 'purchase']);
