@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-    $('#product-search-form').on('click', function() {
+    $('#product-search-form').on('click', function(event) {
         event.preventDefault();
         // 検索フォーム内の値を取得
         let keyword = $('#keyword').val();
@@ -23,7 +23,7 @@ $(document).ready(function() {
             },
             dataType: 'json',
         }).done(function (response) {
-            alert('成功しました');
+            console.log('成功しました');
     
             let products = response.products;
             let tableBody = $('#product-table tbody');
@@ -31,7 +31,7 @@ $(document).ready(function() {
             tableBody.empty(); 
     
             for (let product of products) {
-                let detailUrl = '/detail/' + product.id;
+                let detailUrl = '/v-machine/public/detail/' + product.id;
                 let deleteUrl = '/' + product.id;
     
                 let row = `
@@ -43,42 +43,26 @@ $(document).ready(function() {
                         <td>${product.stock}</td>
                         <td>${product.company.company_name}</td>
                         <td><a href="${detailUrl}" class="detail_btn">詳細</a></td>
-                        <td><button class="delete_btn" onclick="confirmDelete('${deleteUrl}')">削除</button></td>
+                        // 削除ボタンに商品IDをカスタムデータとして埋め込む
+                        <td><button class="delete_btn" data-product-id="${product.id}">削除</button></td>
+
                     </tr>`;
                 tableBody.append(row);
+                // tablesorterを更新
+                $('#product-table').trigger('update');
             }
         }).fail(function (error) {
             alert('失敗しました！');
         });
-    })
+    });
     
     // ソート機能
-    $(document).ready(function() {
-        $('#product-table th a').on('click', function() {
-            e.preventDefault();
+    // tablesorter を適用
+    $('#product-table').tablesorter();
     
-            // リンクのhrefからソートの方向を取得
-            var href = $(this).attr('href');
-            var direction = 'asc';
-            if (href.indexOf('desc') !== -1) {
-                direction = 'desc';
-            }
-    
-            $.ajax({
-                url: href,
-                data: {
-                    direction: direction
-                },
-                success: function(data) {
-                    // ソートされたデータをテーブルに反映
-                    $('#product-table tbody').html(data);
-                }
-            });
-        });
-    });
 
     // 削除処理の非同期処理
-    $('.delete_btn').on('click', function() {
+    $('#product-table').on('click', '.delete_btn', function() {
         var deleteConfirm = confirm('削除してもよろしいでしょうか？')
 
         if(deleteConfirm) {
@@ -104,7 +88,4 @@ $(document).ready(function() {
             });
         }
     });
-
 });
-
-

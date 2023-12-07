@@ -32,23 +32,15 @@
             <button type="submit" id="product-search-form">検索</button>
         </form>
     </div>
-    <table class="table" id="product-table">
+    <table class="table tablesorter" id="product-table">
         <thead>
             <tr>
-                <!--                
-            　  <th>ID</th>
+                <th>ID</th>
                 <th>商品画像</th>
                 <th>商品名</th>
                 <th>価格</th>
                 <th>在庫数</th>
                 <th>メーカー名</th> 
-                -->
-                <th>@sortablelink('id', 'ID')</th>
-                <th>@sortablelink('img_path', '商品画像')</th>
-                <th>@sortablelink('product_name', '商品名')</th>
-                <th>@sortablelink('price', '価格')</th>
-                <th>@sortablelink('stock', '在庫数')</th>
-                <th>@sortablelink('company.company_name', 'メーカー名')</th>
                 <th colspan="2"><a href="{{ route('products.create') }}" class="new-addition-button">新規登録</a></th>
             </tr>
         </thead>
