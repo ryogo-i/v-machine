@@ -5,13 +5,16 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Sale;
 use App\Models\Product;
+use Illuminate\Support\facades\DB;
 
 
 class SalesController extends Controller
 {
     public function purchase(Request $request)
     {
-        // リクエストから必要なデータを取得
+        return DB::transaction(function () use ($request) {
+
+                    // リクエストから必要なデータを取得
         $productId = $request->input('product_id');
         $quantity = $request->input('quantity', 1); //購入数を代入。データがない場合１を代入。
 
@@ -39,6 +42,7 @@ class SalesController extends Controller
         $sale->save();
 
         return response()->json(['message' => '購入できました']);
+        });
 
     }
 }
